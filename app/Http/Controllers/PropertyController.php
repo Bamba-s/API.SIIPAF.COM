@@ -2,262 +2,77 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
-use App\Models\ModelProperty\AdditionalFeatures;
-use App\Models\ModelProperty\AreaPlans;
-use App\Models\ModelProperty\AreaProperty;
-use App\Models\ModelProperty\DeliveryTime;
-use App\Models\ModelProperty\Gallery;
-use App\Models\ModelProperty\Localisation;
-use App\Models\ModelProperty\PaymentDeadline;
-use App\Models\ModelProperty\Plans;
-use App\Models\ModelProperty\Videos;
-use Illuminate\Http\Request;
 use App\Models\ModelProperty\Property;
-use App\Models\ModelProperty\Features;
-use App\Models\ModelProperty\AreaFeatures;
 use Illuminate\Support\Facades\DB;
 
 class PropertyController extends Controller
 {
+
     public function index() 
-    {
-        $properties = Property::with('localisation','features.areaFeatures','paymentDeadline',
-         'deliveryTime', 'areaProperty','additionalFeatures',
-         'gallery','plans.areaPlans','videos')->get();
-        return response()->json(['Properties' => $properties]);
-    }
+{
+    $perPage = 20; // Items per page
+
+    $properties = Property::with('localisation', 'features.areaFeatures', 'paymentDeadline',
+        'deliveryTime', 'areaProperty', 'additionalFeatures',
+        'gallery', 'plans.areaPlans', 'videos')->paginate($perPage);
+
+    $totalItems = $properties->total(); //  total items
+    $itemsPerPage = $properties->perPage(); // Items per page
+    $totalPages = $properties->lastPage(); //  total number per page
+    $currentPage = $properties->currentPage(); // Current page
+
+    return response()->json([
+        'data' => $properties->items(),
+        'totalItems' => $totalItems,
+        'itemsPerPage' => $itemsPerPage,
+        'totalPages' => $totalPages,
+        'page' => $currentPage
+    ]);
+}
 
     //
-        public function show( Property $id)
+        public function show($id)
     {
-        $property = Property::findOrFail($id);
+    
+        $property = Property::with('localisation', 'features.areaFeatures', 'paymentDeadline',
+        'deliveryTime', 'areaProperty', 'additionalFeatures',
+        'gallery', 'plans.areaPlans', 'videos')->find($id);
+
         if (!$property) {
-            return response()->json(['message' => "Aucune propriété trouvée avec ID:$id"], 404);
+            return response()->json(['message' => "Aucune propriété avec l'ID : $id !"], 404);
         }
-        return response()->json($property);
+
+        return response()->json(['Propriété' => $property]);
+        
+       
     }
 
-    public function create(Request $request)
+    public function delete($id)
     {
         DB::beginTransaction();
-
+    
         try {
-            // Check if property with the same target data in the database
-            $property = Property::where(
-                'title', $request->input('title'))
-                ->where('desc', $request->input('desc'))
-                ->where('formattedAddress', $request->input('formattedAddress'))
-                ->where('price_sale', $request->input('price_sale'))
-                ->where('price_rent', $request->input('price_rent'))
-                ->first();
-
+            // Retrieve the property by ID
+            $property=Property::find($id);
             if (!$property) {
-                // If property doesn't exist, create a new one
-                $validatedData = $request->validate([
-                    'title' => 'required|string|max:255',
-                    'desc' => 'required|string|max:1000',
-                    'propertyType' => 'required|string|max:255',
-                    'projectTitle' => 'required|string|max:255',
-                    'propertyStatus' => 'required|string|max:255',
-                    'formattedAddress' => 'required|string|max:255',
-                    'featured' => 'required|boolean',
-                    'price_sale' => 'required|numeric',
-                    'price_rent' => 'required|numeric',
-                    'initialContribution_percentage' => 'required|integer',
-                    'monthlyPayment' => 'required|numeric',
-                    'bedrooms' => 'required|integer',
-                    'rooms' => 'required|integer',
-                    'localisation.lat' => 'required|numeric',
-                    'localisation.lng' => 'required|numeric',
-                    'features' => 'array',
-                    'features.*.name' => 'required|string|max:255',
-                    'features.*.value' => 'required|string|max:255',
-                    'features.*.unit' => 'required|string|max:255',
-                    'paymentDeadline.value' => 'required|numeric',
-                    'paymentDeadline.unit' => 'required|string|max:255',
-                    'deliveryTime.value' => 'required|numeric',
-                    'deliveryTime.unit' => 'required|string|max:255',
-                    'areaProperty.ground' => 'required|numeric',
-                    'areaProperty.used' => 'required|numeric',
-                    'areaProperty.unit' => 'required|string|max:255',
-                    'additionalFeatures' => 'array',
-                    'additionalFeatures.*.name' => 'required|string|max:255',
-                    'additionalFeatures.*.value' => 'required|string|max:255',
-                    'gallery' => 'array',
-                    'gallery.*.small' => 'required|max:2048',
-                    'gallery.*.medium' => 'required|max:2048',
-                    'gallery.*.big' => 'required|max:2048', 
-                    'plans' => 'array',
-                    'plans.*.name' => 'required|string|max:255',
-                    'plans.*.desc' => 'required|string|max:1000',
-                    'plans.*.image' => 'required|max:2048',
-                    'plans.*.value' => 'required|numeric',
-                    'plans.*.unit' => 'required|string|max:255',
-                    'videos' => 'array',
-                    'videos.*.name' => 'required|string|max:255',
-                    'videos.*.link' => 'required|string|max:255',
-                ]);
-
-                // Create Property
-                $property = Property::create($validatedData);
-
-                //Localisation
-                if ($request->has('localisation')) {
-                    $localisationData = $request->input('localisation');
-                    $localisation = new Localisation([
-                        'lat' => $localisationData['lat'],
-                        'lng' => $localisationData['lng'],
-                        
-                    ]);
-                    $property->localisation()->save($localisation);
-                }
-
-                // Add property features
-                if (isset($validatedData['features'])) {
-                    foreach ($validatedData['features'] as $featureData) {
-                        $feature = new Features([
-                            'name' => $featureData['name'],
-                        ]);
-                        $property->features()->save($feature);
-
-                        $areaFeature = new AreaFeatures([
-                            'value' => $featureData['value'],
-                            'unit' => $featureData['unit'],
-                            'property_id' => $property->id,
-                            'features_id' => $feature->id,
-                        ]);
-                        $feature->areaFeatures()->save($areaFeature);
-                    }
-                }
-
-                // Payment Dealine
-                if ($request->has('paymentDeadline')) {
-                    $paymentDeadlineData = $request->input('paymentDeadline');
-                    $paymentDeadline = new PaymentDeadline([
-                        'value' => $paymentDeadlineData['value'],
-                        'unit' => $paymentDeadlineData['unit'],
-                        'property_id' => $property->id,
-                    ]);
-                    $property->paymentDeadline()->save($paymentDeadline);
-                }
-
-                //Delivrery Time
-                $deliveryTimeData = $request->input('deliveryTime');
-                $deliveryTime = new DeliveryTime([
-                    'value' => $deliveryTimeData['value'],
-                    'unit' => $deliveryTimeData['unit'],
-                ]);
-                $property->deliveryTime()->save($deliveryTime);
-
-               // Area Property
-                $areaPropertyData = $request->input('areaProperty');
-                $areaProperty = new AreaProperty([
-                    'ground' => $areaPropertyData['ground'],
-                    'used' => $areaPropertyData['used'],
-                    'unit' => $areaPropertyData['unit'],
-                ]);
-                $property->areaProperty()->save($areaProperty);
-
-               // Additional Features
-                if (isset($validatedData['additionalFeatures'])) {
-                    foreach ($validatedData['additionalFeatures'] as $featureData) {
-                        $additionalFeature = new AdditionalFeatures([
-                            'name' => $featureData['name'],
-                            'value' => $featureData['value'],
-                        ]);
-                        $property->additionalFeatures()->save($additionalFeature);
-                    }
-                }
-
-                /*$mediaPath = public_path('media');
-                if (!file_exists($mediaPath)) {
-                    mkdir($mediaPath, 0755, true);
-                }
-                */
-                $mediaPath = public_path('media');
-                if (!File::exists($mediaPath)) {
-                    File::makeDirectory($mediaPath, 0755, true);
-                }
-              
-                
-                //Gallery
-                if (isset($validatedData['gallery'])) {
-                    foreach ($validatedData['gallery'] as $imageData) {
-                        $smallImage = $imageData['small'];
-                        $mediumImage = $imageData['medium'];
-                        $bigImage = $imageData['big'];
-                
-                        $smallPath = Storage::disk('public')->putFile('media', $smallImage);
-                        $mediumPath = Storage::disk('public')->putFile('media', $mediumImage);
-                        $bigPath = Storage::disk('public')->putFile('media', $bigImage);
-                
-                        $gallery = new Gallery([
-                            'small' => $smallPath,
-                            'medium' => $mediumPath,
-                            'big' => $bigPath,
-                        ]);
-                        $property->gallery()->save($gallery);
-                    }
-                }
-                
-                
-                    // Plans
-                    if (isset($validatedData['plans'])) {
-                    foreach ($validatedData['plans'] as $planData) {
-                        $planImage = $planData['image'];
-
-                        // Move and store the plan image in the public/media directory
-                        $planImagePath = Storage::disk('public')->putFile('media', $planImage);
-                       
-                        $plan = new Plans([
-                            'name' => $planData['name'],
-                            'desc' => $planData['desc'],
-                            'image' => $planImagePath,
-                        ]);
-                        $property->plans()->save($plan);
-
-                        $areaPlan = new AreaPlans([
-                            'value' => $planData['value'],
-                            'unit' => $planData['unit'],
-                            'property_id' => $property->id,
-                            'features_id' => $feature->id, // Note: Please make sure to set the correct value here
-                        ]);
-                        $plan->areaPlans()->save($areaPlan);
-                    }
-                }
-                
-
-                //Videos
-               if (isset($validatedData['videos'])) {
-                    foreach ($validatedData['videos'] as $videoData) {
-                        $video = new Videos([
-                            'name' => $videoData['name'],
-                            'link' => $videoData['link'],
-                        ]);
-                        $property->videos()->save($video);
-                    }
-                }
-                
-              
-                $message = 'Propriété ajoutée !'; // Property added message
-            } else {
-                $message = 'Cette propriété existe déjà.'; // Property exists message
+                return response(['message' => "Aucune propriété avec id:$id !"], 404);
             }
-
+    
+            // Delete the property and its related models
+            $property->delete();
+    
             // Commit the transaction
             DB::commit();
+    
+            $message = 'Propriété supprimée !'; // Property deleted message
         } catch (\Exception $e) {
             // Rollback the transaction if an error occurs
             DB::rollback();
             throw $e;
         }
-
-        // Return a JSON response with the message indicating whether the property was added or not
+    
+        // Return a JSON response with the message indicating whether the property was deleted or not
         return response()->json(['message' => $message]);
     }
-
-
 
 }

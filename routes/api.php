@@ -8,6 +8,9 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\PropertyController;
+use App\Http\Controllers\PropertyCtrllers\CreateController;
+use App\Http\Controllers\PropertyCtrllers\UpdateController;
+use App\Http\Controllers\Forms\ContactFormController;
 
 
 /*
@@ -34,10 +37,17 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
       Route::post('/password/email', [ForgotPasswordController::class, "sendResetLinkEmail"]);
       // Reset password user
       Route::post('/password/reset', [ResetPasswordController::class,"reset"]);
+      
+      // Contact form
+      Route::post('/contact', [ContactFormController::class,"contact"]);
 
+      //Property CRUD
       Route::get('/properties', [PropertyController::class,"index"]);
-      Route::get('/properties/show', [PropertyController::class,"show"]);
-      Route::post('/properties', [PropertyController::class,"create"]);
+      Route::get('/properties/{id}', [PropertyController::class,"show"]);
+      Route::post('/properties', [CreateController::class,"create"]);
+      Route::put('/properties/{id}', [UpdateController::class,"update"]);
+      Route::delete('/properties/{id}', [PropertyController::class,"delete"]);
+     
 
 
       /***ROUTES ACCESSIBLE WITH AUTHENTICATION* */
