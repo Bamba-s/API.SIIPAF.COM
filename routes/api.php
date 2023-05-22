@@ -36,20 +36,20 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
       Route::post('/password/reset', [ResetPasswordController::class,"reset"]);
 
             /***ROUTES ACCESSIBLE WITH AUTHENTICATION* */
-      // Route::middleware('auth:sanctum')->group(function () {
+       Route::middleware('auth:sanctum')->group(function () {
           Route::get("/users", [UserController::class, "index"]);
           Route::put('/users/{id}', [UserController::class,"update"]);
           Route::post('/logout', [LoginController::class,"logout"]);
           Route::delete('/users', [UserController::class,"deleteAccount"]);
-      
-        // });
 
-      //Property CRUD
-      Route::get('/properties', [PropertyController::class,"index"]);
-      Route::get('/properties/{id}', [PropertyController::class,"show"]);
-      Route::post('/properties', [CreateController::class,"create"]);
-      Route::put('/properties/{id}', [UpdateController::class,"update"]);
-      Route::delete('/properties/{id}', [PropertyController::class,"delete"]);
+                //Property CRUD
+          Route::get('/properties', [PropertyController::class,"index"]);
+          Route::get('/properties/{id}', [PropertyController::class,"show"]);
+          Route::post('/properties', [CreateController::class,"create"]);
+          Route::put('/properties/{id}', [UpdateController::class,"update"]);
+          Route::delete('/properties/{id}', [PropertyController::class,"delete"]);
+          
+         });
 
       // Contact form
       Route::post('/contactForm', [ContactFormController::class,"contact"]);
