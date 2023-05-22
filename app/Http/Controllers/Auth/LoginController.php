@@ -56,7 +56,7 @@ class LoginController extends Controller
         $user = $request->user();
         // Révoquer tous les tokens d'accès de l'utilisateur
         $user->tokens()->delete();
-        // Réponse de succès avec un message indiquant que l'utilisateur est déconnecté
+        // SUccess lougout response
         return response()->json(['message' => 'Vous êtes déconnecté.'], 200);
     }
 }

@@ -13,61 +13,30 @@ use Illuminate\Queue\SerializesModels;
 class ContactSubmitted extends Mailable
 {
     use Queueable, SerializesModels;
-    public $contact;
+    public $mailData;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(Contact $contact)
+    public function __construct(Contact $mailData)
     {
         //
-        $this->contact = $contact;
-    }
+        $this->mailData = $mailData;
+     }
+   
     public function build()
     {
-        return $this->view('emails.contact_submitted')
-            ->subject('Formulaire de contact soumis')
-            ->with([
-                'name' => $this->contact->name,
-                'telephone' => $this->contact->telephone,
-                'message' => $this->contact->message,
-                'service' => $this->contact->service,
+        return $this ->subject('Nouveau message du formulaire de contact')
+           ->view('emails.contact-submitted')
+           ->with([
+                'name' => $this->mailData->name,
+                'telephone' => $this->mailData->telephone,
+                'email' => $this->mailData->email,
+                'message' => $this->mailData->message,
+                'service' => $this->mailData->service,
             ]);
-    }
-
-    /**
-     * Get the message envelope.
-     *
-     * @return \Illuminate\Mail\Mailables\Envelope
-     */
-    public function envelope()
-    {
-        return new Envelope(
-            subject: 'Contact Submitted',
-        );
-    }
-
-    /**
-     * Get the message content definition.
-     *
-     * @return \Illuminate\Mail\Mailables\Content
-     */
-    public function content()
-    {
-        return new Content(
-            view: 'emails.contact_submitted',
-        );
-    }
-
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array
-     */
-    public function attachments()
-    {
-        return [];
-    }
-}
+             }
+  
+             }

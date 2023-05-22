@@ -9,19 +9,18 @@ use Illuminate\Support\Facades\DB;
 class UserController extends Controller
 {
    //GET ALL USERS
-    public function index()
-    {
-        $users = User::all();
-        return response()->json(['users' => $users]);
-    }
-
-    
-   /* public function destroy(Request $request)
-    {
-        $user = $request->user();
-        $user->delete();
-        return response()->json(['message' => 'Votre compte a été supprimé']);
-    }*/
+   public function index()
+   {
+       $users = User::paginate(20);
+       return response()->json([
+           'users' => $users->items(),
+           'totalUsers' => $users->total(),
+           'usersPerPage' => $users->perPage(),
+           'totalPages' => $users->lastPage(),
+           'page' => $users->currentPage()
+       ]);
+   }
+   
     
     // DELETE USER ACCOUNT
     public function deleteAccount(Request $request){

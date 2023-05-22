@@ -28,7 +28,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });*/
 
-/***ROUTES ACCESSIBLE WITHOUT AUTHENTICATION* */
+    /***ROUTES ACCESSIBLE WITHOUT AUTHENTICATION* */
       // User registration
       Route::post('/register', [RegisterController::class,"register"]);
       // User authentication
@@ -37,9 +37,18 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
       Route::post('/password/email', [ForgotPasswordController::class, "sendResetLinkEmail"]);
       // Reset password user
       Route::post('/password/reset', [ResetPasswordController::class,"reset"]);
+
+            /***ROUTES ACCESSIBLE WITH AUTHENTICATION* */
+      Route::middleware('auth:sanctum')->group(function () {
+        // Get all users
+          Route::get("/users", [UserController::class, "index"]);
+          // Logout user
+          Route::post('/logout', [LoginController::class,"logout"]);
+          // Delete user account
+          Route::delete('/users', [UserController::class,"deleteAccount"]);
       
-      // Contact form
-      Route::post('/contact', [ContactFormController::class,"contact"]);
+        });
+      
 
       //Property CRUD
       Route::get('/properties', [PropertyController::class,"index"]);
@@ -47,16 +56,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
       Route::post('/properties', [CreateController::class,"create"]);
       Route::put('/properties/{id}', [UpdateController::class,"update"]);
       Route::delete('/properties/{id}', [PropertyController::class,"delete"]);
+
+      // Contact form
+      Route::post('/contactForm', [ContactFormController::class,"contact"]);
+      Route::get('/contactFormSubmissions', [ContactFormController::class, 'listSubmissions']);
      
-
-
-      /***ROUTES ACCESSIBLE WITH AUTHENTICATION* */
-Route::middleware('auth:sanctum')->group(function () {
-    // Get all users
-      Route::get("/users", [UserController::class, "index"]);
-      // Logout user
-      Route::post('/logout', [LoginController::class,"logout"]);
-      // Delete user account
-      Route::delete('/users', [UserController::class,"deleteAccount"]);
-   
-    });
