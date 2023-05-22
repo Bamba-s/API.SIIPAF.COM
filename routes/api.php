@@ -29,26 +29,20 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });*/
 
     /***ROUTES ACCESSIBLE WITHOUT AUTHENTICATION* */
-      // User registration
+    
       Route::post('/register', [RegisterController::class,"register"]);
-      // User authentication
       Route::post('/login', [LoginController::class,"login"]);
-      // Send reset password email
       Route::post('/password/email', [ForgotPasswordController::class, "sendResetLinkEmail"]);
-      // Reset password user
       Route::post('/password/reset', [ResetPasswordController::class,"reset"]);
 
             /***ROUTES ACCESSIBLE WITH AUTHENTICATION* */
-      Route::middleware('auth:sanctum')->group(function () {
-        // Get all users
+      // Route::middleware('auth:sanctum')->group(function () {
           Route::get("/users", [UserController::class, "index"]);
-          // Logout user
+          Route::put('/users/{id}', [UserController::class,"update"]);
           Route::post('/logout', [LoginController::class,"logout"]);
-          // Delete user account
           Route::delete('/users', [UserController::class,"deleteAccount"]);
       
-        });
-      
+        // });
 
       //Property CRUD
       Route::get('/properties', [PropertyController::class,"index"]);

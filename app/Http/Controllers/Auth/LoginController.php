@@ -33,30 +33,30 @@ class LoginController extends Controller
         // Get user credentials from the HTTP request
         $credentials = $request->only(['email', 'password']);
 
-        // Tenter d'authentifier l'utilisateur avec les informations d'identification fournies
+        // Try to authenticate the user with the provided credentials
         if (!Auth::attempt($credentials)) {
-            // Si l'authentification échoue, renvoyer une réponse d'erreur avec un code d'état HTTP 401
+            // If authentication fails, return an error response with an HTTP 401 status code
             return response()->json(['error' => 'Email ou mot de passe incorrect'], 401);
         }
 
-        // Récupérer l'utilisateur authentifié à partir de la session
+        // Retrieve the authenticated user from the session
         $user = $request->user();
 
-        // Créer un token d'accès pour l'utilisateur
+        // Create an access token for the user
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        // Réponse de succès avec le token d'accès 
+        // Successful response with the access token
         return response()->json(['access_token' => $token], 200);
     }
 
     // LOGOUT
     public function logout(Request $request)
     {
-        // Récupérer l'utilisateur authentifié à partir de la session
+        //Recover authenticated user from the session
         $user = $request->user();
-        // Révoquer tous les tokens d'accès de l'utilisateur
+        // Revoke all user's access tokens
         $user->tokens()->delete();
-        // SUccess lougout response
+        // Success lougout response
         return response()->json(['message' => 'Vous êtes déconnecté.'], 200);
     }
 }

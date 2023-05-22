@@ -42,6 +42,16 @@ return [
         ],
     ],
 
+    'guards' => [
+        'api' => [
+            'driver' => 'passport',
+            'provider' => 'users',
+            'hash' => false,
+            'expires_in' => 86400, // Valeur par défaut : 1 jour (en secondes)
+        ],
+    ],
+    
+
     /*
     |--------------------------------------------------------------------------
     | User Providers

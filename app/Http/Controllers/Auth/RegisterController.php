@@ -12,37 +12,37 @@ use App\Models\User;
 class RegisterController extends Controller
 {
     //
-
     public function register(Request $request)
     {
-        //User data validation
+        // Validation des données utilisateur
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-            'password_confirmed' => 'required|string|min:8'
+            'email' => 'required|string|email|max:255|unique:users,email,NULL,id',
+            'password' => 'required|string|min:8|confirmed',
         ], [
-                'email.unique' => 'Un utilisateur existe déjà avec cet email'
-            ]);
+            'email.unique' => 'Un utilisateur existe déjà avec cet email.',
+            'password.confirmed' => 'Le mot de passe et la confirmation ne correspondent pas.',
+        ]);
 
-            if ($validator->fails()) {
-                return response()->json(['error' => $validator->errors()], 422);
-            }
-            // Check if password and confirmation match
-            if ($request->password !== $request->password_confirmed) {
-                return response()->json(['error' => 'Le mot de passe et la confirmation ne correspondent pas.'], 422);
-            }
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
 
-            // create a new user with validated data
+        try {
+        
+            // Create new user with validated data
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => bcrypt($request->password),
-                'password_confirmed' => bcrypt($request->password_confirmed),
             ]);
 
             // Success message
             return response()->json(['message' => 'Inscription réussie !'], 201);
+        } catch (\Exception $e) {
+            // Gestion des erreurs de la base de données
+            return response()->json(['error' => 'Une erreur est survenue lors de l\'inscription.'], 500);
+        }
     }
 
 

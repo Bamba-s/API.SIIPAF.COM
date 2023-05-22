@@ -22,11 +22,12 @@ class PropertyController extends Controller
     $currentPage = $properties->currentPage(); // Current page
 
     return response()->json([
+        'current_page' => $currentPage,
         'data' => $properties->items(),
         'totalItems' => $totalItems,
         'itemsPerPage' => $itemsPerPage,
         'totalPages' => $totalPages,
-        'page' => $currentPage
+        
     ]);
 }
 
