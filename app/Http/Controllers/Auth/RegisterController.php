@@ -14,7 +14,7 @@ class RegisterController extends Controller
     //
     public function register(Request $request)
     {
-        // Validation des données utilisateur
+        // User data validation
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,NULL,id',
@@ -40,7 +40,8 @@ class RegisterController extends Controller
             // Success message
             return response()->json(['message' => 'Inscription réussie !'], 201);
         } catch (\Exception $e) {
-            // Gestion des erreurs de la base de données
+           
+            // Database error management
             return response()->json(['error' => 'Une erreur est survenue lors de l\'inscription.'], 500);
         }
     }

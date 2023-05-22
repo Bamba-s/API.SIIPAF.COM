@@ -26,7 +26,7 @@ class UserController extends Controller
     // UPDATE USER
     public function update(Request $request, $id)
     {
-        // Validation des données utilisateur
+        // User data validation
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $id,
@@ -41,13 +41,13 @@ class UserController extends Controller
         }
 
         try {
-            // Vérifier si l'utilisateur existe
+            // Check if user exists
             $user=User::find($id);
         if (!$user) {
             return response(['message' => "Aucun utilisateur trouvé avec id:$id !"], 404);
         }
 
-            // Mettre à jour les données de l'utilisateur avec les nouvelles données validées
+            // Update the user's data with the new validated data
             $user->name = $request->name;
             $user->email = $request->email;
 
@@ -55,13 +55,13 @@ class UserController extends Controller
                 $user->password = bcrypt($request->password);
             }
 
-            // Sauvegarder les modifications
+            // save modifications
             $user->save();
 
             // Success message
             return response()->json(['message' => 'Utilisateur mis à jour avec succès !'], 200);
         } catch (\Exception $e) {
-            // Gestion des erreurs de la base de données
+            // Database errors management
             return response()->json(['error' => 'Une erreur est survenue lors de la mise à jour de l\'utilisateur.'], 500);
         }
     }

@@ -47,7 +47,7 @@ class ContactFormController extends Controller
 
     public function listSubmissions(Request $request)
     {
-        $perPage = $request->query('per_page', 20); // Number of items per page, default is 10
+        $perPage = $request->query('per_page', 20); // Number of items per page
         $submissions = Contact::paginate($perPage);
 
         return response()->json($submissions);

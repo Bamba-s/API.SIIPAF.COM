@@ -195,7 +195,7 @@ class CreateController extends Controller
                             'value' => $planData['value'],
                             'unit' => $planData['unit'],
                             'property_id' => $property->id,
-                            'features_id' => $feature->id, // Note: Please make sure to set the correct value here
+                            'features_id' => $feature->id,
                         ]);
                         $plan->areaPlans()->save($areaPlan);
                     }
