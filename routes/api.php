@@ -30,16 +30,18 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
     /***ROUTES ACCESSIBLE WITHOUT AUTHENTICATION* */
     
-      Route::post('/register', [RegisterController::class,"register"]);
-      Route::post('/login', [LoginController::class,"login"]);
-      Route::post('/password/email', [ForgotPasswordController::class, "sendResetLinkEmail"]);
-      Route::post('/password/reset', [ResetPasswordController::class,"reset"]);
+      Route::post('/auth/register', [RegisterController::class,"register"]);
+      Route::post('/auth/login', [LoginController::class,"login"]);
+     Route::post('/password/email', [ForgotPasswordController::class, "sendResetLinkEmail"])->name('password.email');
+     Route::post('/password/reset', [ResetPasswordController::class,"reset"])->name('password.update');
+     Route::get('/password/reset/{token}',[ForgotPasswordController::class, "showResetForm"])->name('password.reset');
+     ;
 
             /***ROUTES ACCESSIBLE WITH AUTHENTICATION* */
        Route::middleware('auth:sanctum')->group(function () {
           Route::get("/users", [UserController::class, "index"]);
           Route::put('/users/{id}', [UserController::class,"update"]);
-          Route::post('/logout', [LoginController::class,"logout"]);
+          Route::post('/auth/logout', [LoginController::class,"logout"]);
           Route::delete('/users', [UserController::class,"deleteAccount"]);
 
                 //Property CRUD
@@ -52,6 +54,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
          });
 
       // Contact form
-      Route::post('/contactForm', [ContactFormController::class,"contact"]);
-      Route::get('/contactFormSubmissions', [ContactFormController::class, 'listSubmissions']);
+      Route::post('/contact-form', [ContactFormController::class,"contact"]);
+      Route::get('/contacts', [ContactFormController::class, 'listSubmissions']);
      

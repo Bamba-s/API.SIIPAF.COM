@@ -42,6 +42,13 @@ return [
         ],
     ],
 
+    'tokens' => [
+        'api' => [
+            'expire' => 60, // Durée d'expiration de l'access token en minutes
+            'refresh_ttl' => 120, // Durée de validité du refresh token en minutes
+        ],
+    ],
+/*
     'guards' => [
         'api' => [
             'driver' => 'passport',
@@ -49,7 +56,7 @@ return [
             'hash' => false,
             'expires_in' => 86400, // Valeur par défaut : 1 jour (en secondes)
         ],
-    ],
+    ],*/
     
 
     /*
