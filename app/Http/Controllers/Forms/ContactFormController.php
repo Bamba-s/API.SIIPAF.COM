@@ -36,10 +36,11 @@ class ContactFormController extends Controller
             'service' => $request->service,
             'message' => $request->message,
         ]);
-
+       
         $mailData->save();
-
-        Mail::to('bamba.inf@gmail.com')->send(new ContactSubmitted($mailData));
+        
+        $logoPath = public_path('images/logo-siipaf.jpg');
+        Mail::to('bamba.inf@gmail.com')->send(new ContactSubmitted($mailData, $logoPath));
 
         // Success message
         return response()->json(['message' => 'Le formulaire de contact a été soumis avec succès.']);

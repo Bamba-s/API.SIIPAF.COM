@@ -13,17 +13,19 @@ use Illuminate\Queue\SerializesModels;
 class ContactSubmitted extends Mailable
 {
     use Queueable, SerializesModels;
-    public $mailData;
+
+    public $mailData,$logoPath;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(Contact $mailData)
+    public function __construct(Contact $mailData, $logoPath)
     {
         //
         $this->mailData = $mailData;
+        $this->logoPath = $logoPath;
      }
    
     public function build()
@@ -31,6 +33,7 @@ class ContactSubmitted extends Mailable
         return $this ->subject('Nouveau message du formulaire de contact')
            ->view('emails.contact-submitted')
            ->with([
+                'logo' => $this->logoPath,
                 'name' => $this->mailData->name,
                 'telephone' => $this->mailData->telephone,
                 'email' => $this->mailData->email,

@@ -20,6 +20,7 @@ class ResetPasswordNotification extends ResetPassword
     public function __construct()
     {
         //
+        
     }
 
     /**
