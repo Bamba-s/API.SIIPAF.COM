@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ModelProperty\Property;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class PropertyController extends Controller
@@ -47,11 +48,23 @@ class PropertyController extends Controller
         
        
     }
+     
+    // Search properties
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+
+        $properties = Property::where('title', 'like', "%$query%")
+                           ->orWhere('desc', 'like', "%$query%")
+                           ->paginate(10);
+                           //->get();
+
+        return response()->json($properties);
+    }
 
     public function delete($id)
     {
         DB::beginTransaction();
-    
         try {
             // Retrieve the property by ID
             $property=Property::find($id);

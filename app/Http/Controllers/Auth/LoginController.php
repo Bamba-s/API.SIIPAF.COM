@@ -15,39 +15,44 @@ class LoginController extends Controller
         return Auth::guard();
     }
 
-    // LOGIN
     public function login(Request $request)
-    {
-        // Validate user data
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email|max:255',
-            'password' => 'required|string'
-        ]);
+{
+    // Validate user data
+    $validator = Validator::make($request->all(), [
+        'email' => 'required|string|email|max:255',
+        'password' => 'required|string'
+    ]);
 
-        /***  If user data are not valid,
-         return an error response with an HTTP 422 status code ***/
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 422);
-        }
-
-        // Get user credentials from the HTTP request
-        $credentials = $request->only(['email', 'password']);
-
-        // Try to authenticate the user with the provided credentials
-        if (!Auth::attempt($credentials)) {
-            // If authentication fails, return an error response with an HTTP 401 status code
-            return response()->json(['error' => 'Email ou mot de passe incorrect'], 401);
-        }
-
-        // Retrieve the authenticated user from the session
-        $user = $request->user();
-
-        // Create an access token for the user
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        // Successful response with the access token
-        return response()->json(['access_token' => $token], 200);
+    /***  If user data are not valid,
+     return an error response with an HTTP 422 status code ***/
+    if ($validator->fails()) {
+        return response()->json(['error' => $validator->errors()], 422);
     }
+
+    // Get user credentials from the HTTP request
+    $credentials = $request->only(['email', 'password']);
+
+    // Try to authenticate the user with the provided credentials
+    if (!Auth::attempt($credentials)) {
+        // If authentication fails, return an error response with an HTTP 401 status code
+        return response()->json(['error' => 'Email ou mot de passe incorrect'], 401);
+    }
+
+    // Retrieve the authenticated user from the session
+    $user = $request->user();
+
+    // Determine the user type (admin or regular user)
+    $userType = $user->isAdmin() ? 'admin' : 'user';
+
+    // Set the appropriate message based on the user type
+    $message = $userType === 'admin' ? 'Admin connected' : 'User connected';
+
+    // Create an access token for the user
+    $token = $user->createToken('auth_token')->plainTextToken;
+
+    // Successful response with the access token and message
+    return response()->json(['access_token' => $token, 'message' => $message], 200);
+}
 
     // LOGOUT
     public function logout(Request $request)

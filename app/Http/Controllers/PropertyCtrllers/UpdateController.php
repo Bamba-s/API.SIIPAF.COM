@@ -26,7 +26,7 @@ class UpdateController extends Controller
         // Find the property by ID
         $property=Property::find($id);
         if (!$property) {
-            return response(['message' => "Aucune propriété  avec id:$id !"], 404);
+            return response(['message' => "Aucune propriété trouvée  avec id:$id !"], 404);
         }
 
         // Update the property data

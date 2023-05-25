@@ -23,28 +23,29 @@ class RegisterController extends Controller
             'email.unique' => 'Un utilisateur existe déjà avec cet email.',
             'password.confirmed' => 'Le mot de passe et la confirmation ne correspondent pas.',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
         }
 
+         // Determine the role
+         $role = $request->filled('role') ? $request->role : 'user';
+    
         try {
-        
             // Create new user with validated data
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => bcrypt($request->password),
+                'role' => $role
             ]);
-
+    
             // Success message
             return response()->json(['message' => 'Inscription réussie !'], 201);
         } catch (\Exception $e) {
-           
             // Database error management
             return response()->json(['error' => 'Une erreur est survenue lors de l\'inscription.'], 500);
         }
     }
-
-
+    
 }
