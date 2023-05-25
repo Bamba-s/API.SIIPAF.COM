@@ -30,7 +30,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
     /***ROUTES ACCESSIBLE WITHOUT AUTHENTICATION* */
      
-   // Route::post('/auth/admin', [RegisterController::class,"registerAdmin"]);
+   
       // Users authentication
       Route::post('/auth/register', [RegisterController::class,"register"]);
       Route::post('/auth/login', [LoginController::class,"login"]);
