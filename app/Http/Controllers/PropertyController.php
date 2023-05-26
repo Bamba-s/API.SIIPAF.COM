@@ -50,17 +50,17 @@ class PropertyController extends Controller
     }
      
     // Search properties
-    // public function search(Request $request)
-    // {
-    //     $query = $request->input('query');
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
 
-    //     $properties = Property::where('title', 'like', "%$query%")
-    //                        ->orWhere('desc', 'like', "%$query%")
-    //                        ->paginate(10);
-    //                        //->get();
+        $properties = Property::where('title', 'like', "%$query%")
+                           ->orWhere('desc', 'like', "%$query%")
+                           ->paginate(10);
+                           //->get();
 
-    //     return response()->json($properties);
-    // }
+        return response()->json($properties);
+    }
 
     public function delete($id)
     {

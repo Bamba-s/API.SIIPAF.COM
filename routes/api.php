@@ -49,8 +49,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
                 //Property CRUD
           Route::get('/properties', [PropertyController::class,"index"]);
-          Route::get('/properties/{id}', [PropertyController::class,"show"]);
-          //Route::get('/properties', [PropertyController::class,"search"]);
+         // Route::get('/properties/{id}', [PropertyController::class,"show"]);
+          Route::get('/properties/search', [PropertyController::class,"search"]);
           Route::post('/properties', [CreateController::class,"create"]);
           Route::put('/properties/{id}', [UpdateController::class,"update"]);
           Route::delete('/properties/{id}', [PropertyController::class,"delete"]);
