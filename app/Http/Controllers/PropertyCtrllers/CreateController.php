@@ -13,6 +13,7 @@ use App\Models\ModelProperty\Gallery;
 use App\Models\ModelProperty\Localisation;
 use App\Models\ModelProperty\PaymentDeadline;
 use App\Models\ModelProperty\Plans;
+use App\Models\ModelProperty\Price;
 use App\Models\ModelProperty\Property;
 use App\Models\ModelProperty\Videos;
 use Illuminate\Http\Request;
@@ -33,8 +34,8 @@ class CreateController extends Controller
                 'title', $request->input('title'))
                 ->where('desc', $request->input('desc'))
                 ->where('formattedAddress', $request->input('formattedAddress'))
-                ->where('price_sale', $request->input('price_sale'))
-                ->where('price_rent', $request->input('price_rent'))
+                // ->where('price.*.sale', $request->input('price.*.sale'))
+                // ->where('price.*.rent', $request->input('price.*.rent'))
                 ->first();
 
             if (!$property) {
@@ -47,12 +48,12 @@ class CreateController extends Controller
                     'propertyStatus' => 'required|string|max:255',
                     'formattedAddress' => 'required|string|max:255',
                     'featured' => 'required|boolean',
-                    'price_sale' => 'required|numeric',
-                    'price_rent' => 'required|numeric',
-                    'initialContribution_percentage' => 'required|integer',
+                    'initialContributionPercentage' => 'required|integer',
                     'monthlyPayment' => 'required|numeric',
                     'bedrooms' => 'required|integer',
                     'rooms' => 'required|integer',
+                    'price.sale' => 'required|numeric',
+                    'price.rent' => 'required|numeric',
                     'localisation.lat' => 'required|numeric',
                     'localisation.lng' => 'required|numeric',
                     'features' => 'array',
@@ -86,6 +87,17 @@ class CreateController extends Controller
 
                 // Create Property
                 $property = Property::create($validatedData);
+
+                //Price
+                if ($request->has('price')) {
+                    $priceData = $request->input('price');
+                    $price = new Price([
+                        'sale' => $priceData['sale'],
+                        'rent' => $priceData['rent'],
+                        
+                    ]);
+                    $property->price()->save($price);
+                }
 
                 //Localisation
                 if ($request->has('localisation')) {

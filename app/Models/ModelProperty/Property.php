@@ -16,10 +16,15 @@ class Property extends Model
 
     protected $fillable = [
         'title', 'desc', 'propertyType', 'projectTitle', 'propertyStatus', 'formattedAddress', 
-        'featured', 'price_sale', 'price_rent', 'initialContribution_percentage', 'monthlyPayment', 
+        'featured', 'initialContributionPercentage', 'monthlyPayment', 
         'bedrooms', 'rooms',
     ];
 
+
+    public function price()
+    {
+        return $this->hasMany(Price::class);
+    }
     public function localisation()
     {
         return $this->hasMany(Localisation::class);

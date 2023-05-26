@@ -22,12 +22,24 @@ return new class extends Migration
             $table->string('propertyStatus');
             $table->string('formattedAddress');
             $table->boolean('featured');
-            $table->decimal('price_sale', 10, 2,true);
-            $table->decimal('price_rent',10,2,true);
-            $table->integer('initialContribution_percentage');
+          // $table->decimal('price_sale', 10, 2,true);
+         //$table->decimal('price_rent',10,2,true);
+            $table->integer('initialContributionPercentage');
             $table->float('monthlyPayment'); 
             $table->integer('bedrooms');
             $table->integer('rooms');
+            $table->timestamps();
+        });
+
+        Schema::create('prices', function (Blueprint $table) {
+            $table->id();
+            $table->decimal('sale', 10, 2,true);
+            $table->decimal('rent',10,2,true);
+            $table->unsignedBigInteger('property_id');
+            $table->foreign('property_id')
+                  ->references('id')
+                  ->on('properties')
+                  ->onDelete('cascade');
             $table->timestamps();
         });
  

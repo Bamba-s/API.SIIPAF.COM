@@ -13,7 +13,7 @@ class PropertyController extends Controller
 {
     $perPage = 20; // Items per page
 
-    $properties = Property::with('localisation', 'features.areaFeatures', 'paymentDeadline',
+    $properties = Property::with('price','localisation', 'features.areaFeatures', 'paymentDeadline',
         'deliveryTime', 'areaProperty', 'additionalFeatures',
         'gallery', 'plans.areaPlans', 'videos')->paginate($perPage);
 
@@ -36,7 +36,7 @@ class PropertyController extends Controller
         public function show($id)
     {
     
-        $property = Property::with('localisation', 'features.areaFeatures', 'paymentDeadline',
+        $property = Property::with('price','localisation', 'features.areaFeatures', 'paymentDeadline',
         'deliveryTime', 'areaProperty', 'additionalFeatures',
         'gallery', 'plans.areaPlans', 'videos')->find($id);
 
@@ -50,17 +50,17 @@ class PropertyController extends Controller
     }
      
     // Search properties
-    public function search(Request $request)
-    {
-        $query = $request->input('query');
+    // public function search(Request $request)
+    // {
+    //     $query = $request->input('query');
 
-        $properties = Property::where('title', 'like', "%$query%")
-                           ->orWhere('desc', 'like', "%$query%")
-                           ->paginate(10);
-                           //->get();
+    //     $properties = Property::where('title', 'like', "%$query%")
+    //                        ->orWhere('desc', 'like', "%$query%")
+    //                        ->paginate(10);
+    //                        //->get();
 
-        return response()->json($properties);
-    }
+    //     return response()->json($properties);
+    // }
 
     public function delete($id)
     {

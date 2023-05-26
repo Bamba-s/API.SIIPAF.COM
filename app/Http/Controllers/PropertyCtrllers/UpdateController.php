@@ -9,6 +9,7 @@ use App\Models\ModelProperty\AreaPlans;
 use App\Models\ModelProperty\Features;
 use App\Models\ModelProperty\Gallery;
 use App\Models\ModelProperty\Plans;
+use App\Models\ModelProperty\Price;
 use App\Models\ModelProperty\Property;
 use App\Models\ModelProperty\Videos;
 use Illuminate\Http\Request;
@@ -38,12 +39,12 @@ class UpdateController extends Controller
             'propertyStatus' => 'required|string|max:255',
             'formattedAddress' => 'required|string|max:255',
             'featured' => 'required|boolean',
-            'price_sale' => 'required|numeric',
-            'price_rent' => 'required|numeric',
-            'initialContribution_percentage' => 'required|integer',
+            'initialContributionPercentage' => 'required|integer',
             'monthlyPayment' => 'required|numeric',
             'bedrooms' => 'required|integer',
             'rooms' => 'required|integer',
+            'price.sale' => 'required|numeric',
+            'price.rent' => 'required|numeric',
             'localisation.lat' => 'required|numeric',
             'localisation.lng' => 'required|numeric',
             'features' => 'array',
@@ -76,6 +77,16 @@ class UpdateController extends Controller
         ]);
 
         $property->update($validatedData);
+
+        //Price
+        if ($request->has('price')) {
+            $priceData = $request->input('price');
+            $property->price()->update([
+                'sale' => $priceData['sale'],
+                'rent' => $priceData['rent'],
+                
+            ]);
+        }
 
         // Update Localisation
         if ($request->has('localisation')) {

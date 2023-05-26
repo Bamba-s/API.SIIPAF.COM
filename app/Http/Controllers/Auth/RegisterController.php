@@ -29,7 +29,7 @@ class RegisterController extends Controller
         }
 
          // Determine the role
-         $role = $request->filled('role') ? $request->role : 'user';
+         $role = $request->filled('role') ? $request->role : 'admin';
     
         try {
             // Create new user with validated data
