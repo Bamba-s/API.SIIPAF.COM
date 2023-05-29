@@ -42,12 +42,15 @@ return [
         ],
     ],
 
+    /*** Token expiration date* */
     'tokens' => [
         'api' => [
             'expire' => 60, // Durée d'expiration de l'access token en minutes
             'refresh_ttl' => 120, // Durée de validité du refresh token en minutes
         ],
     ],
+
+    /*** USER ACCESS TOKEN EXPIRATION***/
 /*
     'guards' => [
         'api' => [

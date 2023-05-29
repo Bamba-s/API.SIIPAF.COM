@@ -56,7 +56,7 @@ class PropertyController extends Controller
 
         $properties = Property::where('title', 'like', "%$query%")
                            ->orWhere('desc', 'like', "%$query%")
-                           ->paginate(10);
+                           ->paginate(20);
                            //->get();
 
         return response()->json($properties);

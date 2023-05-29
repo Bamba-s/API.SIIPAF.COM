@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
+
 class CreateController extends Controller
 {
     //
@@ -34,28 +35,30 @@ class CreateController extends Controller
                 'title', $request->input('title'))
                 ->where('desc', $request->input('desc'))
                 ->where('formattedAddress', $request->input('formattedAddress'))
-                // ->where('price.*.sale', $request->input('price.*.sale'))
-                // ->where('price.*.rent', $request->input('price.*.rent'))
+                ->whereHas('price', function ($query) use ($request) {
+                    $query->where('sale', $request->input('price.sale'))
+                        ->where('rent', $request->input('price.rent'));
+                })
                 ->first();
 
             if (!$property) {
                 // If property doesn't exist, create a new one
                 $validatedData = $request->validate([
                     'title' => 'required|string|max:255',
-                    'desc' => 'required|string|max:1000',
+                    'desc' => 'string|max:1000',
                     'propertyType' => 'required|string|max:255',
                     'projectTitle' => 'required|string|max:255',
                     'propertyStatus' => 'required|string|max:255',
                     'formattedAddress' => 'required|string|max:255',
                     'featured' => 'required|boolean',
-                    'initialContributionPercentage' => 'required|integer',
+                    'initialContributionPercentage' => 'integer',
                     'monthlyPayment' => 'required|numeric',
                     'bedrooms' => 'required|integer',
                     'rooms' => 'required|integer',
                     'price.sale' => 'required|numeric',
                     'price.rent' => 'required|numeric',
-                    'localisation.lat' => 'required|numeric',
-                    'localisation.lng' => 'required|numeric',
+                    'localisation.lat' => 'numeric',
+                    'localisation.lng' => 'numeric',
                     'features' => 'array',
                     'features.*.name' => 'required|string|max:255',
                     'features.*.value' => 'required|string|max:255',
@@ -69,20 +72,20 @@ class CreateController extends Controller
                     'areaProperty.unit' => 'required|string|max:255',
                     'additionalFeatures' => 'array',
                     'additionalFeatures.*.name' => 'required|string|max:255',
-                    'additionalFeatures.*.value' => 'required|string|max:255',
-                    'gallery' => 'array',
+                    'additionalFeatures.*.value' => 'string|max:255',
+                    'gallery' => 'required|array|min:1',
                     'gallery.*.small' => 'required|max:2048',
                     'gallery.*.medium' => 'required|max:2048',
                     'gallery.*.big' => 'required|max:2048', 
-                    'plans' => 'array',
+                    'plans' => 'required|array|min:1' ,
                     'plans.*.name' => 'required|string|max:255',
-                    'plans.*.desc' => 'required|string|max:1000',
+                    'plans.*.desc' => 'string|max:1000',
                     'plans.*.image' => 'required|max:2048',
                     'plans.*.value' => 'required|numeric',
                     'plans.*.unit' => 'required|string|max:255',
                     'videos' => 'array',
-                    'videos.*.name' => 'required|string|max:255',
-                    'videos.*.link' => 'required|string|max:255',
+                    'videos.*.name' => 'string|max:255',
+                    'videos.*.link' => 'string|max:255',
                 ]);
 
                 // Create Property

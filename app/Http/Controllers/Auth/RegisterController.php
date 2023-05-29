@@ -16,7 +16,6 @@ class RegisterController extends Controller
     {
         // User data validation
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,NULL,id',
             'password' => 'required|string|min:8|confirmed',
         ], [
@@ -34,7 +33,6 @@ class RegisterController extends Controller
         try {
             // Create new user with validated data
             $user = User::create([
-                'name' => $request->name,
                 'email' => $request->email,
                 'password' => bcrypt($request->password),
                 'role' => $role
