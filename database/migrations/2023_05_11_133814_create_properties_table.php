@@ -22,8 +22,6 @@ return new class extends Migration
             $table->string('propertyStatus');
             $table->string('formattedAddress');
             $table->boolean('featured');
-          // $table->decimal('price_sale', 10, 2,true);
-         //$table->decimal('price_rent',10,2,true);
             $table->integer('initialContributionPercentage');
             $table->float('monthlyPayment'); 
             $table->integer('bedrooms');
@@ -69,7 +67,7 @@ return new class extends Migration
         });
         
         
-        Schema::create('area_features', function (Blueprint $table) {
+        Schema::create('areaFeatures', function (Blueprint $table) {
             $table->id();
             $table->string('value');
             $table->string('unit');
@@ -84,7 +82,7 @@ return new class extends Migration
         });
         
         
-        Schema::create('payment_deadlines', function (Blueprint $table) {
+        Schema::create('paymentDeadlines', function (Blueprint $table) {
             $table->id();
             $table->string('value');
             $table->string('unit');
@@ -97,7 +95,7 @@ return new class extends Migration
         });
         
     
-        Schema::create('delivery_times', function (Blueprint $table) {
+        Schema::create('deliveryTimes', function (Blueprint $table) {
             $table->id();
             $table->string('value');
             $table->string('unit');
@@ -110,7 +108,7 @@ return new class extends Migration
         });
      
 
-        Schema::create('area_properties', function (Blueprint $table) {
+        Schema::create('areaProperties', function (Blueprint $table) {
             $table->id();
             $table->decimal('ground');
             $table->decimal('used');
@@ -123,7 +121,7 @@ return new class extends Migration
             $table->timestamps();
         });
      
-        Schema::create('additional_features', function (Blueprint $table) {
+        Schema::create('additionalFeatures', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('value');
@@ -163,7 +161,7 @@ return new class extends Migration
         });
    
 
-       Schema::create('area_plans', function (Blueprint $table) {
+       Schema::create('areaPlans', function (Blueprint $table) {
             $table->id();
             $table->integer('value');
             $table->string('unit');
@@ -204,14 +202,14 @@ return new class extends Migration
     public function down()
     {
         Schema::dropIfExists('videos');
-        Schema::dropIfExists('area_plans');
+        Schema::dropIfExists('areaPlans');
         Schema::dropIfExists('plans');
-        Schema::dropIfExists('gallery');
-        Schema::dropIfExists('additional_features');
-        Schema::dropIfExists('area_properties');
-        Schema::dropIfExists('delivery_times');
-        Schema::dropIfExists('payment_deadlines');
-        Schema::dropIfExists('area_features');
+        Schema::dropIfExists('galleries');
+        Schema::dropIfExists('additionalFeatures');
+        Schema::dropIfExists('areaProperties');
+        Schema::dropIfExists('deliveryTimes');
+        Schema::dropIfExists('paymentDeadlines');
+        Schema::dropIfExists('areaFeatures');
         Schema::dropIfExists('features');
         Schema::dropIfExists('properties');
      

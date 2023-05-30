@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class PaymentDeadline extends Model
 {
     use HasFactory;
-
+    public $table = 'paymentDeadlines';
     protected $fillable = ['value', 'unit', 'property_id'];
 
     public function property()

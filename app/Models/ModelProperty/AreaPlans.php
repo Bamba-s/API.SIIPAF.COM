@@ -9,7 +9,7 @@ use App\Models\ModelProperty\Plans;
 class AreaPlans extends Model
 {
     use HasFactory;
-
+    public $table = 'areaPlans';
     
     protected $fillable = ['value', 'unit','plans_id', 'property_id'];
 

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class DeliveryTime extends Model
 {
     use HasFactory;
-
+    public $table = 'deliveryTimes';
     protected $fillable = ['value', 'unit', 'property_id'];
 
     public function property()

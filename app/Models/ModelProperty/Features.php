@@ -5,15 +5,15 @@ namespace App\Models\ModelProperty;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ModelProperty\Property;
-use App\Models\ModelProperty\areaFeatures;
+use App\Models\ModelProperty\AreaFeatures;
 
 class Features extends Model
 {
     use HasFactory;
     protected $fillable = [
         'name',
-        'value',
-        'unit',
+        // 'value',
+        // 'unit',
         'property_id',
     ];
 

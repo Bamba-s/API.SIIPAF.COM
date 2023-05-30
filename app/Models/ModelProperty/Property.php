@@ -4,11 +4,6 @@ namespace App\Models\ModelProperty;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-/*use App\Models\ModelProperty\Features;
-use App\Models\ModelProperty\AreaFeatures;
-use App\Models\ModelProperty\PaymentDeadline;
-use App\Models\ModelProperty\DeliveryTime;
-use App\Models\ModelProperty\AreaProperty;*/
 
 class Property extends Model
 {
