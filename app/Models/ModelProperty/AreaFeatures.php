@@ -14,7 +14,7 @@ class AreaFeatures extends Model
 
     public function features()
     {
-        return $this->belongsTo(Features::class);
-       // return $this->belongsTo('App\Models\ModelProperty\Features');
+       // return $this->belongsTo(Features::class);
+        return $this->belongsTo('App\Models\ModelProperty\Features');
     }
 }
