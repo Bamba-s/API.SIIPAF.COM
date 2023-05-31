@@ -47,10 +47,11 @@ class UpdateController extends Controller
             'price.rent' => 'required|numeric',
             'localisation.lat' => 'required|numeric',
             'localisation.lng' => 'required|numeric',
-            'features' => 'array',
+            'features' => 'required|array|min:1',
             'features.*.name' => 'required|string|max:255',
-            'features.*.value' => 'required|string|max:255',
-            'features.*.unit' => 'required|string|max:255',
+            'features.*.areaFeatures' => 'required|array',
+            'features.*.areaFeatures.value' => 'required|string|max:255',
+            'features.*.areaFeatures.unit' => 'required|string|max:255',
             'paymentDeadline.value' => 'required|numeric',
             'paymentDeadline.unit' => 'required|string|max:255',
             'deliveryTime.value' => 'required|numeric',
@@ -65,12 +66,12 @@ class UpdateController extends Controller
             'gallery.*.small' => 'required|max:2048',
             'gallery.*.medium' => 'required|max:2048',
             'gallery.*.big' => 'required|max:2048', 
-            'plans' => 'array',
+            'plans' => 'required|array|min:1',
             'plans.*.name' => 'required|string|max:255',
-            'plans.*.desc' => 'required|string|max:1000',
+            'plans.*.desc' => 'required|string',
             'plans.*.image' => 'required|max:2048',
-            'plans.*.value' => 'required|numeric',
-            'plans.*.unit' => 'required|string|max:255',
+            'plans.*.areaPlans.value' => 'required|numeric',
+            'plans.*.areaPlans.unit' => 'required|string|max:255',
             'videos' => 'array',
             'videos.*.name' => 'required|string|max:255',
             'videos.*.link' => 'required|string|max:255',
@@ -97,25 +98,30 @@ class UpdateController extends Controller
             ]);
         }
 
-        // Update property features
-        if (isset($validatedData['features'])) {
-            $property->features()->delete(); // Delete existing features
-
-            foreach ($validatedData['features'] as $featureData) {
-                $feature = new Features([
-                    'name' => $featureData['name'],
-                ]);
-                $property->features()->save($feature);
-
-                $areaFeature = new AreaFeatures([
-                    'value' => $featureData['value'],
-                    'unit' => $featureData['unit'],
-                    'property_id' => $property->id,
-                    'features_id' => $feature->id,
-                ]);
-                $feature->areaFeatures()->save($areaFeature);
-            }
-        }
+                // Update property features
+                if (isset($validatedData['features'])) {
+                    $property->features()->delete(); 
+        
+                    foreach ($validatedData['features'] as $featureData) {
+                        // Create Feature
+                        $feature = new Features([
+                            'name' => $featureData['name'],
+                        ]);
+                        $property->features()->save($feature);
+        
+                        if (isset($featureData['areaFeatures'])) {
+                            // Create AreaFeatures
+                            $areaFeatureData = $featureData['areaFeatures'];
+                            $areaFeature = new AreaFeatures([
+                                'value' => $areaFeatureData['value'],
+                                'unit' => $areaFeatureData['unit'],
+                                'property_id' => $property->id,
+                                'features_id' => $feature->id,
+                            ]);
+                            $feature->areaFeatures()->save($areaFeature);
+                        }
+                    }
+                }
 
         // Update Payment Deadline
         if ($request->has('paymentDeadline')) {
@@ -193,12 +199,12 @@ class UpdateController extends Controller
                 $property->plans()->save($plan);
 
                 $areaPlan = new AreaPlans([
-                    'value' => $planData['value'],
-                    'unit' => $planData['unit'],
+                    'value' => $planData['areaPlans']['value'],
+                    'unit' => $planData['areaPlans']['unit'],
                     'property_id' => $property->id,
-                    'features_id' => $feature->id, 
+                    'plan_id' => $plan->id,
                 ]);
-                    $plan->areaPlans()->save($areaPlan);
+                $plan->areaPlans()->save($areaPlan);
                 
                 }
             }

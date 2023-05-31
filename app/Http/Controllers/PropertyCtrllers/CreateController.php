@@ -32,7 +32,8 @@ class CreateController extends Controller
         try {
             // Check if property with the same target data in the database
             $property = Property::where(
-                'title', $request->input('title'))
+                'title', $request->input('title')
+            )
                 ->where('desc', $request->input('desc'))
                 ->where('formattedAddress', $request->input('formattedAddress'))
                 ->whereHas('price', function ($query) use ($request) {
@@ -42,7 +43,7 @@ class CreateController extends Controller
                 ->first();
 
             if (!$property) {
-                // If property doesn't exist, create a new one
+                // Property data validation
                 $validatedData = $request->validate([
                     'title' => 'required|string|max:255',
                     'desc' => 'string',
@@ -59,11 +60,11 @@ class CreateController extends Controller
                     'price.rent' => 'required|numeric',
                     'localisation.lat' => 'numeric',
                     'localisation.lng' => 'numeric',
-                    'features' => 'required|array|min:1', 
-                    'features.*.name' => 'required|string|max:255', 
-                    'features.*.areaFeatures' => 'required|array', 
-                    'features.*.areaFeatures.value' => 'required|string|max:255', 
-                    'features.*.areaFeatures.unit' => 'required|string|max:255', 
+                    'features' => 'required|array|min:1',
+                    'features.*.name' => 'required|string|max:255',
+                    'features.*.areaFeatures' => 'required|array',
+                    'features.*.areaFeatures.value' => 'required|string|max:255',
+                    'features.*.areaFeatures.unit' => 'required|string|max:255',
                     'paymentDeadline.value' => 'required|numeric',
                     'paymentDeadline.unit' => 'required|string|max:255',
                     'deliveryTime.value' => 'required|numeric',
@@ -77,13 +78,13 @@ class CreateController extends Controller
                     'gallery' => 'required|array|min:1',
                     'gallery.*.small' => 'required|max:2048',
                     'gallery.*.medium' => 'required|max:2048',
-                    'gallery.*.big' => 'required|max:2048', 
-                    'plans' => 'required|array|min:1', 
-                    'plans.*.name' => 'required|string|max:255', 
-                    'plans.*.desc' => 'required|string', 
-                    'plans.*.image' => 'required|max:2048', 
-                    'plans.*.areaPlans.value' => 'required|numeric', 
-                    'plans.*.areaPlans.unit' => 'required|string|max:255', 
+                    'gallery.*.big' => 'required|max:2048',
+                    'plans' => 'required|array|min:1',
+                    'plans.*.name' => 'required|string|max:255',
+                    'plans.*.desc' => 'required|string',
+                    'plans.*.image' => 'required|max:2048',
+                    'plans.*.areaPlans.value' => 'required|numeric',
+                    'plans.*.areaPlans.unit' => 'required|string|max:255',
                     'videos' => 'array',
                     'videos.*.name' => 'string|max:255',
                     'videos.*.link' => 'string|max:255',
@@ -98,7 +99,7 @@ class CreateController extends Controller
                     $price = new Price([
                         'sale' => $priceData['sale'],
                         'rent' => $priceData['rent'],
-                        
+
                     ]);
                     $property->price()->save($price);
                 }
@@ -109,7 +110,7 @@ class CreateController extends Controller
                     $localisation = new Localisation([
                         'lat' => $localisationData['lat'],
                         'lng' => $localisationData['lng'],
-                        
+
                     ]);
                     $property->localisation()->save($localisation);
                 }
@@ -158,7 +159,7 @@ class CreateController extends Controller
                 ]);
                 $property->deliveryTime()->save($deliveryTime);
 
-               // Area Property
+                // Area Property
                 $areaPropertyData = $request->input('areaProperty');
                 $areaProperty = new AreaProperty([
                     'ground' => $areaPropertyData['ground'],
@@ -167,7 +168,7 @@ class CreateController extends Controller
                 ]);
                 $property->areaProperty()->save($areaProperty);
 
-               // Additional Features
+                // Additional Features
                 if (isset($validatedData['additionalFeatures'])) {
                     foreach ($validatedData['additionalFeatures'] as $featureData) {
                         $additionalFeature = new AdditionalFeatures([
@@ -177,18 +178,18 @@ class CreateController extends Controller
                         $property->additionalFeatures()->save($additionalFeature);
                     }
                 }
-              
+
                 //Gallery
                 if (isset($validatedData['gallery'])) {
                     foreach ($validatedData['gallery'] as $imageData) {
                         $smallImage = $imageData['small'];
                         $mediumImage = $imageData['medium'];
                         $bigImage = $imageData['big'];
-                
+
                         $smallPath = Storage::disk('public')->putFile('media', $smallImage);
                         $mediumPath = Storage::disk('public')->putFile('media', $mediumImage);
                         $bigPath = Storage::disk('public')->putFile('media', $bigImage);
-                
+
                         $gallery = new Gallery([
                             'small' => $smallPath,
                             'medium' => $mediumPath,
@@ -198,36 +199,36 @@ class CreateController extends Controller
                     }
                 }
 
-                                // Plans
-                                if (isset($validatedData['plans'])) {
-                                    foreach ($validatedData['plans'] as $planData) {
-                                        $planImage = $planData['image'];
-                
-                                        // Déplacer et enregistrer l'image du plan dans le répertoire public/media
-                                        $planImagePath = Storage::disk('public')->putFile('media', $planImage);
-                
-                                        $plan = new Plans([
-                                            'name' => $planData['name'],
-                                            'desc' => $planData['desc'],
-                                            'image' => $planImagePath,
-                                        ]);
-                                        $property->plans()->save($plan);
-                
-                                        $areaPlan = new AreaPlans([
-                                            'value' => $planData['areaPlans']['value'],
-                                            'unit' => $planData['areaPlans']['unit'],
-                                            'property_id' => $property->id,
-                                            'plan_id' => $plan->id,
-                                        ]);
-                                        $plan->areaPlans()->save($areaPlan);
-                                    }
-                                }
-                
+                // Plans
+                if (isset($validatedData['plans'])) {
+                    foreach ($validatedData['plans'] as $planData) {
+                        $planImage = $planData['image'];
 
-                
+                        // Déplacer et enregistrer l'image du plan dans le répertoire public/media
+                        $planImagePath = Storage::disk('public')->putFile('media', $planImage);
+
+                        $plan = new Plans([
+                            'name' => $planData['name'],
+                            'desc' => $planData['desc'],
+                            'image' => $planImagePath,
+                        ]);
+                        $property->plans()->save($plan);
+
+                        $areaPlan = new AreaPlans([
+                            'value' => $planData['areaPlans']['value'],
+                            'unit' => $planData['areaPlans']['unit'],
+                            'property_id' => $property->id,
+                            'plan_id' => $plan->id,
+                        ]);
+                        $plan->areaPlans()->save($areaPlan);
+                    }
+                }
+
+
+
 
                 //Videos
-               if (isset($validatedData['videos'])) {
+                if (isset($validatedData['videos'])) {
                     foreach ($validatedData['videos'] as $videoData) {
                         $video = new Videos([
                             'name' => $videoData['name'],
@@ -236,8 +237,8 @@ class CreateController extends Controller
                         $property->videos()->save($video);
                     }
                 }
-                
-              
+
+
                 $message = 'Propriété ajoutée !'; // Property added message
             } else {
                 $message = 'Cette propriété existe déjà.'; // Property exists message
